@@ -1,0 +1,14 @@
+# .streamlit/config.toml
+[server]
+enableCORS = true
+enableXsrfProtection = true
+maxUploadSize = 200 # MB
+
+[browser]
+gatherUsageStats = false
+
+[client]
+showSidebarNavigation = true
+
+[global]
+disableWatchdog = false # Pode ser útil se você tiver muitos arquivos
