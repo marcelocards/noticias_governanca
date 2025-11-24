@@ -1,0 +1,16 @@
+# requirements.txt
+streamlit
+pandas
+numpy
+yfinance
+gnews
+requests
+plotly
+# Bibliotecas para extração de corpo da notícia (se USE_ARTICLE_BODY for True)
+newspaper3k
+lxml
+tldextract
+# Sentimento
+nltk
+# Para carregar configuracoes
+python-dotenv
