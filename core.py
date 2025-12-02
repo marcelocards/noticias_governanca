@@ -29,9 +29,11 @@ def get_stock_data(tickers: List[str], start_date: datetime, end_date: datetime)
                 df = df[(df.index >= pd.Timestamp(start_date)) & (df.index <= pd.Timestamp(end_date))]
                 
             if df is not None and not df.empty:
+                # 🌟 CORREÇÃO 1: Remove o fuso horário do índice (TZ-Naive)
+                if df.index.tz is not None:
+                    df.index = df.index.tz_localize(None) 
                 data[ticker] = df
             else:
-                # Retorna vazio se a coleta falhar (sem simulação)
                 data[ticker] = pd.DataFrame() 
         
         except Exception:
@@ -49,6 +51,10 @@ def get_brent_prices(start_date: datetime, end_date: datetime) -> Optional[pd.Da
             df = df[(df.index >= pd.Timestamp(start_date)) & (df.index <= pd.Timestamp(end_date))] 
             
         if df is not None and not df.empty:
+            # 🌟 CORREÇÃO 1: Remove o fuso horário do índice (TZ-Naive)
+            if df.index.tz is not None:
+                df.index = df.index.tz_localize(None) 
+            
             out = df[["Close"]].rename(columns={"Close": "Brent_Price"})
             out.index.name = "Date"
             return out
@@ -56,7 +62,6 @@ def get_brent_prices(start_date: datetime, end_date: datetime) -> Optional[pd.Da
     except Exception:
         pass
         
-    # Retorna DataFrame vazio se a coleta falhar
     return pd.DataFrame() 
 
 def get_dollar_rate(start_date: datetime, end_date: datetime) -> Optional[pd.DataFrame]:
@@ -68,7 +73,7 @@ def get_dollar_rate(start_date: datetime, end_date: datetime) -> Optional[pd.Dat
             f"CotacaoDolarPeriodo(dataInicial=@dataInicial,dataFinalCotacao=@dataFinalCotacao)?"
             f"@dataInicial='{start_str}'&@dataFinalCotacao='{end_str}'&$top=10000&$format=json"
         )
-        # Não usamos certificado, confiamos no CA_BUNDLE padrão do ambiente Streamlit Cloud
+        # Em ambiente externo, não precisamos do CA_BUNDLE
         r = requests.get(url, timeout=15) 
         r.raise_for_status()
         data = r.json().get("value", [])
@@ -76,12 +81,16 @@ def get_dollar_rate(start_date: datetime, end_date: datetime) -> Optional[pd.Dat
             df = pd.DataFrame(data)
             df["dataHoraCotacao"] = pd.to_datetime(df["dataHoraCotacao"])
             df = df.sort_values("dataHoraCotacao").set_index("dataHoraCotacao")
+            
+            # 🌟 CORREÇÃO 2: Remove o fuso horário do índice do BCB (TZ-Naive)
+            if df.index.tz is not None:
+                df.index = df.index.tz_localize(None)
+                
             return df
             
     except Exception:
         pass
         
-    # Retorna DataFrame vazio se a coleta falhar
     return pd.DataFrame() 
 
 # =========================
@@ -280,6 +289,10 @@ def daily_sentiment_series(news_processed: List[dict]) -> pd.Series:
         
     s = df.groupby("_d")["sentiment_score"].mean()
     s.index = pd.to_datetime(s.index)
+    # 🌟 CORREÇÃO 3: Garante que o índice de sentimento seja TZ-Naive antes de sair
+    if s.index.tz is not None:
+        s.index = s.index.tz_localize(None)
+        
     s.name = "Sentiment"
     return s
 
