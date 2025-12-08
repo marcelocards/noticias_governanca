@@ -6,7 +6,7 @@ import streamlit as st
 import numpy as np
 
 # ==============================
-# Configurações Padrão (Sem .env)
+# Configurações Padrão
 # ==============================
 TITLE_WEIGHT = 0.7
 BODY_WEIGHT = 0.3
@@ -63,7 +63,8 @@ def load_data(
     start_dt = end_dt - timedelta(days=days_ago)
 
     # 1. Dados de Mercado
-    tickers = ["PETR3.SA", "PETR4.SA","^BVSP","PBR","PBRA"]
+    # Incluindo PBR e PBRA
+    tickers = ["PETR3.SA", "PETR4.SA", "^BVSP", "PBR", "PBRA"] 
     stock_data = get_stock_data(tickers, start_dt, end_dt)
     brent_df = get_brent_prices(start_dt, end_dt)
     dollar_df = get_dollar_rate(start_dt, end_dt)
@@ -159,7 +160,8 @@ with tab1:
     
     # Normalizar as colunas de preços para o índice 100
     normalized_prices = {}
-    for col in ["IBOV", "PETR4", "PETR3", "Brent", "Dólar","PBRA", "PBR"]:
+    # 🌟 INCLUINDO PBR e PBRA na normalização e plotagem:
+    for col in ["IBOV", "PETR4", "PETR3", "Brent", "Dólar", "PBR", "PBRA"]: 
         if col in daily_table.columns:
             s = daily_table[col].astype(float)
             norm_s = (s / s.iloc[0]) * 100.0 if len(s) > 0 and s.iloc[0] != 0 else pd.Series(dtype=float)
@@ -186,6 +188,7 @@ with tab1:
     st.subheader("Sentimento Diário Médio")
     sent_data = df_plot["Sentiment"].dropna()
     
+    # 🌟 VERIFICAÇÃO DO GRÁFICO DE SENTIMENTO
     if not sent_data.empty:
         fig_sent = px.bar(
             sent_data,
@@ -199,7 +202,7 @@ with tab1:
         fig_sent.update_layout(showlegend=False, coloraxis_showscale=False, hovermode="x unified")
         st.plotly_chart(fig_sent, use_container_width=True)
     else:
-        st.info("Dados insuficientes para gerar o gráfico de sentimento.")
+        st.info("Dados insuficientes para gerar o gráfico de sentimento. Tente aumentar o período ou buscar por temas mais abrangentes.")
 
     st.markdown("---")
 
@@ -211,8 +214,8 @@ with tab1:
                 "IBOV": "{:,.2f}",
                 "PETR3": "{:.2f}",
                 "PETR4": "{:.2f}",
-                "PBRA": "{:.2f}" ,
-                 "PBR": "{:.2f}" ,
+                "PBR": "{:.2f}", # 🌟 INCLUIDO ADR
+                "PBRA": "{:.2f}", # 🌟 INCLUIDO ADR
                 "Brent": "{:.2f}",
                 "Dólar": "{:.3f}",
                 "Sentiment": "{:.3f}"
