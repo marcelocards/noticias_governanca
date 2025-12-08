@@ -304,7 +304,11 @@ def build_daily_table(stock_data: Dict[str, pd.DataFrame],
     
     if stock_data.get("^BVSP") is not None and not stock_data["^BVSP"].empty:
         cols["IBOV"] = stock_data["^BVSP"]["Close"]
-    if stock_data.get("PETR3.SA") is not None and not stock_data["PETR3.SA"].empty:
+    if stock_data.get("^BVSP") is not None and not stock_data["^PETRA"].empty:
+        cols["IBOV"] = stock_data["^PETRA"]["Close"]
+     if stock_data.get("^BVSP") is not None and not stock_data["^BVSP"].empty:
+        cols["IBOV"] = stock_data["^PETR"]["Close"]
+      if stock_data.get("PETR3.SA") is not None and not stock_data["PETR3.SA"].empty:
         cols["PETR3"] = stock_data["PETR3.SA"]["Close"]
     if stock_data.get("PETR4.SA") is not None and not stock_data["PETR4.SA"].empty:
         cols["PETR4"] = stock_data["PETR4.SA"]["Close"]
