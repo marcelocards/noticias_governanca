@@ -96,7 +96,7 @@ def get_dollar_rate(start_date: datetime, end_date: datetime) -> Optional[pd.Dat
 # (Omitido por brevidade, mas o conteúdo permanece o mesmo do último core.py válido)
 # =========================
 CATEGORIES = {
-    "Governança e Administração": ["governança", "administração", "conselho", "assembleia", "gestão", "compliance", "ética", "transparência", "esg"],
+    "Governança e Gestão": ["governança", "administração", "conselho", "assembleia", "gestão", "compliance", "ética", "transparência", "esg"],
     "Decisões Financeiras": ["lucro", "resultado", "balanço", "receita", "ebitda", "endividamento", "desempenho financeiro", "dividendo", "provento"],
     "Política de Preços": ["preço", "combustível", "gasolina", "diesel", "gnv", "paridade", "subsídio", "reajuste"],
     "Investimentos": ["investimento", "parceria", "exploração", "produção", "refino", "petroquímica", "expansão", "projeto"],
