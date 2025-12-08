@@ -63,7 +63,7 @@ def load_data(
     start_dt = end_dt - timedelta(days=days_ago)
 
     # 1. Dados de Mercado
-    tickers = ["PETR3.SA", "PETR4.SA", "^BVSP"]
+    tickers = ["PETR3.SA", "PETR4.SA","PBR","PBRA" "^BVSP"]
     stock_data = get_stock_data(tickers, start_dt, end_dt)
     brent_df = get_brent_prices(start_dt, end_dt)
     dollar_df = get_dollar_rate(start_dt, end_dt)
