@@ -160,7 +160,6 @@ with tab1:
     
     # Normalizar as colunas de preços para o índice 100
     normalized_prices = {}
-    # 🌟 INCLUINDO PBR e PBRA na normalização e plotagem:
     for col in ["IBOV", "PETR4", "PETR3", "Brent", "Dólar", "PBR", "PBRA"]: 
         if col in daily_table.columns:
             s = daily_table[col].astype(float)
@@ -188,21 +187,23 @@ with tab1:
     st.subheader("Sentimento Diário Médio")
     sent_data = df_plot["Sentiment"].dropna()
     
-    # 🌟 VERIFICAÇÃO DO GRÁFICO DE SENTIMENTO
-    if not sent_data.empty:
+    # 🌟 CORREÇÃO DE PLOTAGEM: Preenche NaN com 0.0 para garantir que o gráfico seja desenhado
+    sent_data_plot = df_plot["Sentiment"].fillna(0.0) 
+    
+    if not sent_data_plot.empty:
         fig_sent = px.bar(
-            sent_data,
+            sent_data_plot, # Usa a série com NaN preenchidos
             title="Score de Sentimento Diário",
             labels={"value": "Score", "index": "Data"},
             height=250,
-            color=sent_data,
+            color=sent_data_plot,
             color_continuous_scale=px.colors.diverging.RdYlGn,
             range_color=[-1, 1]
         )
         fig_sent.update_layout(showlegend=False, coloraxis_showscale=False, hovermode="x unified")
         st.plotly_chart(fig_sent, use_container_width=True)
     else:
-        st.info("Dados insuficientes para gerar o gráfico de sentimento. Tente aumentar o período ou buscar por temas mais abrangentes.")
+        st.info("Dados insuficientes para gerar o gráfico de sentimento.")
 
     st.markdown("---")
 
@@ -214,8 +215,8 @@ with tab1:
                 "IBOV": "{:,.2f}",
                 "PETR3": "{:.2f}",
                 "PETR4": "{:.2f}",
-                "PBR": "{:.2f}", # 🌟 INCLUIDO ADR
-                "PBRA": "{:.2f}", # 🌟 INCLUIDO ADR
+                "PBR": "{:.2f}",
+                "PBRA": "{:.2f}",
                 "Brent": "{:.2f}",
                 "Dólar": "{:.3f}",
                 "Sentiment": "{:.3f}"
