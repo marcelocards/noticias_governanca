@@ -26,10 +26,10 @@ def get_stock_data(tickers: List[str], start_date: datetime, end_date: datetime)
             
             if df is None or df.empty:
                 df = tk.history(period="6mo")
-                df = df[(df.index >= pd.Timestamp(start_date)) & (df.index <= pd.Timestamp(end_date))]
+                df = df[(df.index >= pd.Timestamp(start_date)) & (pd.Timestamp(end_date))]
                 
             if df is not None and not df.empty:
-                # 🌟 CORREÇÃO 1: Remove o fuso horário do índice (TZ-Naive)
+                # Remove o fuso horário (TZ-Naive)
                 if df.index.tz is not None:
                     df.index = df.index.tz_localize(None) 
                 data[ticker] = df
@@ -51,7 +51,7 @@ def get_brent_prices(start_date: datetime, end_date: datetime) -> Optional[pd.Da
             df = df[(df.index >= pd.Timestamp(start_date)) & (df.index <= pd.Timestamp(end_date))] 
             
         if df is not None and not df.empty:
-            # 🌟 CORREÇÃO 1: Remove o fuso horário do índice (TZ-Naive)
+            # Remove o fuso horário (TZ-Naive)
             if df.index.tz is not None:
                 df.index = df.index.tz_localize(None) 
             
@@ -73,7 +73,6 @@ def get_dollar_rate(start_date: datetime, end_date: datetime) -> Optional[pd.Dat
             f"CotacaoDolarPeriodo(dataInicial=@dataInicial,dataFinalCotacao=@dataFinalCotacao)?"
             f"@dataInicial='{start_str}'&@dataFinalCotacao='{end_str}'&$top=10000&$format=json"
         )
-        # Em ambiente externo, não precisamos do CA_BUNDLE
         r = requests.get(url, timeout=15) 
         r.raise_for_status()
         data = r.json().get("value", [])
@@ -82,7 +81,6 @@ def get_dollar_rate(start_date: datetime, end_date: datetime) -> Optional[pd.Dat
             df["dataHoraCotacao"] = pd.to_datetime(df["dataHoraCotacao"])
             df = df.sort_values("dataHoraCotacao").set_index("dataHoraCotacao")
             
-            # 🌟 CORREÇÃO 2: Remove o fuso horário do índice do BCB (TZ-Naive)
             if df.index.tz is not None:
                 df.index = df.index.tz_localize(None)
                 
@@ -95,6 +93,7 @@ def get_dollar_rate(start_date: datetime, end_date: datetime) -> Optional[pd.Dat
 
 # =========================
 # Notícias
+# (Omitido por brevidade, mas o conteúdo permanece o mesmo do último core.py válido)
 # =========================
 CATEGORIES = {
     "Governança e Administração": ["governança", "administração", "conselho", "assembleia", "gestão", "compliance", "ética", "transparência", "esg"],
@@ -289,7 +288,6 @@ def daily_sentiment_series(news_processed: List[dict]) -> pd.Series:
         
     s = df.groupby("_d")["sentiment_score"].mean()
     s.index = pd.to_datetime(s.index)
-    # 🌟 CORREÇÃO 3: Garante que o índice de sentimento seja TZ-Naive antes de sair
     if s.index.tz is not None:
         s.index = s.index.tz_localize(None)
         
@@ -304,10 +302,13 @@ def build_daily_table(stock_data: Dict[str, pd.DataFrame],
     
     if stock_data.get("^BVSP") is not None and not stock_data["^BVSP"].empty:
         cols["IBOV"] = stock_data["^BVSP"]["Close"]
-     if stock_data.get("PBR") is not None and not stock_data["PBR"].empty:
+        
+    # Incluindo PBR e PBRA (ADRs)
+    if stock_data.get("PBR") is not None and not stock_data["PBR"].empty:
         cols["PBR"] = stock_data["PBR"]["Close"]
     if stock_data.get("PBRA") is not None and not stock_data["PBRA"].empty:
         cols["PBRA"] = stock_data["PBRA"]["Close"]
+        
     if stock_data.get("PETR3.SA") is not None and not stock_data["PETR3.SA"].empty:
         cols["PETR3"] = stock_data["PETR3.SA"]["Close"]
     if stock_data.get("PETR4.SA") is not None and not stock_data["PETR4.SA"].empty:
