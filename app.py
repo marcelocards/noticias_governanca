@@ -159,7 +159,7 @@ with tab1:
     
     # Normalizar as colunas de preços para o índice 100
     normalized_prices = {}
-    for col in ["IBOV", "PETR4", "PETR3", "PBRA", "PBR", "Brent", "Dólar"]:
+    for col in ["IBOV", "PETR4", "PETR3", "Brent", "Dólar","PBRA", "PBR"]:
         if col in daily_table.columns:
             s = daily_table[col].astype(float)
             norm_s = (s / s.iloc[0]) * 100.0 if len(s) > 0 and s.iloc[0] != 0 else pd.Series(dtype=float)
