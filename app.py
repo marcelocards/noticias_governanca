@@ -184,15 +184,14 @@ with tab1:
 
     st.markdown("---")
 
-    st.subheader("Sentimento Diário Médio")
-    sent_data = df_plot["Sentiment"].dropna()
+    st.subheader("Sentimento Diário Médio (Apenas dias com Notícias)")
     
-    # 🌟 CORREÇÃO DE PLOTAGEM: Preenche NaN com 0.0 para garantir que o gráfico seja desenhado
-    sent_data_plot = df_plot["Sentiment"].fillna(0.0) 
+    # 🌟 CORREÇÃO 1: Remove os dias que não têm score de sentimento (apenas dias com dados)
+    sent_data_plot = df_plot["Sentiment"].dropna() 
     
     if not sent_data_plot.empty:
         fig_sent = px.bar(
-            sent_data_plot, # Usa a série com NaN preenchidos
+            sent_data_plot, 
             title="Score de Sentimento Diário",
             labels={"value": "Score", "index": "Data"},
             height=250,
@@ -200,10 +199,12 @@ with tab1:
             color_continuous_scale=px.colors.diverging.RdYlGn,
             range_color=[-1, 1]
         )
+        # Garante que o eixo X trate as datas como categorias, ignorando intervalos vazios
+        fig_sent.update_xaxes(type='category') 
         fig_sent.update_layout(showlegend=False, coloraxis_showscale=False, hovermode="x unified")
         st.plotly_chart(fig_sent, use_container_width=True)
     else:
-        st.info("Dados insuficientes para gerar o gráfico de sentimento.")
+        st.info("Dados insuficientes para gerar o gráfico de sentimento. Nenhuma notícia com score foi encontrada no período selecionado.")
 
     st.markdown("---")
 
@@ -251,8 +252,13 @@ with tab2:
     if news_processed:
         news_df = pd.DataFrame(news_processed)
         
+        # 🌟 CORREÇÃO 2: Conversão de data para ordenação
+        news_df['published_date_dt'] = pd.to_datetime(news_df['published_date'], errors='coerce', utc=True)
+        # 🌟 CORREÇÃO 2: Ordena por data (mais recente primeiro)
+        news_df = news_df.sort_values(by='published_date_dt', ascending=False)
+        
         # Preparação dos dados para a tabela
-        news_df['published_date_f'] = pd.to_datetime(news_df['published_date'], errors='coerce', utc=True).dt.tz_convert('America/Sao_Paulo').dt.strftime('%d/%m/%Y %H:%M')
+        news_df['published_date_f'] = news_df['published_date_dt'].dt.tz_convert('America/Sao_Paulo').dt.strftime('%d/%m/%Y %H:%M')
         news_df['sentiment_score_f'] = news_df['sentiment_score'].apply(lambda x: f"{x:.3f}")
         
         df_display = news_df[[
