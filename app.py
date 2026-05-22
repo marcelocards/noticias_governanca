@@ -92,8 +92,9 @@ def load_sentiment(
     Processa sentimento e constrói as séries diárias.
     Cache de 30 min — invalida quando os pesos mudam.
     """
-    # Converte para tuple para hashability (st.cache_data requer tipos imutáveis)
-    news_list = list(news_raw)
+    # news_raw chega como tuple of tuples (para hashability do cache)
+    # Precisa ser convertido de volta para lista de dicts antes de processar
+    news_list = [dict(item) for item in news_raw]
 
     news_processed = process_news_with_sentiment(
         news_list,
@@ -410,3 +411,5 @@ with tab3:
             )
     else:
         st.info("Dados insuficientes para calcular a correlação. Tente um período maior ou verifique as notícias encontradas.")
+
+
