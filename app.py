@@ -441,7 +441,7 @@ with tab1:
             if val < 0:      return "background-color:#7f1d1d33;color:#fecaca"
             return "color:#94a3b8"
 
-        styled = var_show.style.format("{:+.2f}%").applymap(color_cell)
+        styled = var_show.style.format("{:+.2f}%").map(color_cell)
         st.dataframe(styled, use_container_width=True)
 
 
@@ -647,7 +647,7 @@ with tab3:
             st.dataframe(
                 df_cs.style
                     .format({"Correlação com Sentimento": "{:+.3f}"})
-                    .applymap(color_corr, subset=["Correlação com Sentimento"]),
+                    .map(color_corr, subset=["Correlação com Sentimento"]),
                 use_container_width=True, hide_index=True,
             )
 
@@ -680,6 +680,4 @@ with tab3:
                 st.plotly_chart(fig_ov, use_container_width=True)
     else:
         st.info("Dados insuficientes para calcular a correlação. Amplie o período de análise.")
-
-
 
