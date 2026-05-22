@@ -1,16 +1,36 @@
-# requirements.txt
-streamlit
-pandas
-numpy
-yfinance
-gnews
-requests
-plotly
-# Bibliotecas para extração de corpo da notícia (se USE_ARTICLE_BODY for True)
-newspaper3k
-lxml
-tldextract
-# Sentimento
-nltk
-# Para carregar configuracoes
-python-dotenv
+# Petrobras Monitor — requirements.txt
+# Versões fixas para deploy estável no Streamlit Community Cloud
+
+# Core
+streamlit>=1.35.0
+pandas>=2.0.0
+numpy>=1.26.0
+
+# Dados de mercado
+yfinance>=0.2.40
+
+# Notícias
+gnews>=0.3.7
+
+# HTTP
+requests>=2.31.0
+
+# Visualização
+plotly>=5.20.0
+
+# Sentimento em Português (principal)
+# Instala automaticamente torch (CPU) e transformers
+pysentimiento>=0.7.0
+
+# Fallback de sentimento (inglês)
+nltk>=3.8.1
+
+# Extração de corpo de artigo (opcional — USE_ARTICLE_BODY=True)
+newspaper3k>=0.2.8
+lxml>=5.0.0
+lxml_html_clean>=0.1.0
+tldextract>=5.1.0
+
+# Utilitários
+python-dotenv>=1.0.0
+
